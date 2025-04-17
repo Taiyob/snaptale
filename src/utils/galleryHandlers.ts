@@ -44,7 +44,7 @@ export const handleUploadImages = async (
   setUploading?: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   if (setUploading) setUploading(true);
-
+  // online borka house shopping with mini budget
   const uploadedImages: string[] = [];
 
   const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
