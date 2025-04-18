@@ -9,16 +9,12 @@ cloudinary.config({
 
 export async function POST(request: Request) {
   try {
-    // Step 1: body থেকে imageUrl নিচ্ছি
+    // FIXED: 'image' na, eta 'imageUrl' hobe
     const { imageUrl } = await request.json();
 
-    if (!imageUrl) {
-      return NextResponse.json({ error: "Image URL missing" }, { status: 400 });
-    }
+    console.log("📦 Received image URL:", imageUrl);
 
-    console.log("✅ Got image URL:", imageUrl);
-
-    // Step 2: JSONBin থেকে আগের images আনছি
+    // Step 1: Get existing data
     const binId = process.env.JSON_BIN_ID!;
     const masterKey = process.env.JSON_BIN_MASTER_KEY!;
 
@@ -31,11 +27,10 @@ export async function POST(request: Request) {
     const binData = await fetchRes.json();
     const currentImages = binData?.record?.images ?? [];
 
-    console.log("🗃️ Fetched JSONBin. Total images:", currentImages.length);
-
-    // Step 3: নতুন image push করলাম
+    // Step 2: Add new URL to array
     const updatedImages = [...currentImages, imageUrl];
 
+    // Step 3: PUT back updated array
     const saveRes = await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
       method: "PUT",
       headers: {
@@ -53,11 +48,11 @@ export async function POST(request: Request) {
       );
     }
 
-    console.log("✅ Image URL saved to JSONBin");
+    console.log("✅ Saved to JSONBin");
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, imageUrl });
   } catch (err) {
-    console.error("❌ Server Error:", err);
+    console.error("❌ Upload + Save Error:", err);
     return NextResponse.json(
       { error: "Unexpected server error" },
       { status: 500 }
