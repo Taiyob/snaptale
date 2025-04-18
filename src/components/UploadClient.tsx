@@ -9,19 +9,19 @@ export default function UploadClient() {
     if (!imageUrl) return;
 
     // ✅ Send image URL to save API
-    const res = await fetch("/api/saveImage", {
+    fetch("/api/saveImage", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ imageUrl }), // 🟢 নাম একই রাখতে হবে
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      console.error("❌ Failed to save to JSONBin", data);
-    } else {
-      console.log("✅ Saved to JSONBin:", data);
-    }
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        imageUrl:
+          "https://res.cloudinary.com/dxvxccb0y/image/upload/v1744994750/onncrxg3f2hg4uf3xz7z.webp",
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => console.log(data))
+      .catch((error) => console.error("Error:", error));
   };
 
   return (
