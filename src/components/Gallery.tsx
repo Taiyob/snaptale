@@ -172,6 +172,7 @@ export default function Gallery() {
                     alt={`Gallery image ${index}`}
                     width={390}
                     height={380}
+                    unoptimized={true}
                   />
                 </div>
               ))
