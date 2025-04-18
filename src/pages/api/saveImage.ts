@@ -9,15 +9,16 @@ cloudinary.config({
 
 export async function POST(request: Request) {
   try {
-    const { image } = await request.json();
+    // Step 1: body থেকে imageUrl নিচ্ছি
+    const { imageUrl } = await request.json();
 
-    // Upload image to Cloudinary
-    const uploaded = await cloudinary.uploader.upload(image);
-    const imageUrl = uploaded.secure_url;
+    if (!imageUrl) {
+      return NextResponse.json({ error: "Image URL missing" }, { status: 400 });
+    }
 
-    console.log("✅ Uploaded to Cloudinary:", imageUrl);
+    console.log("✅ Got image URL:", imageUrl);
 
-    // Fetch existing data from JSONBin
+    // Step 2: JSONBin থেকে আগের images আনছি
     const binId = process.env.JSON_BIN_ID!;
     const masterKey = process.env.JSON_BIN_MASTER_KEY!;
 
@@ -30,9 +31,9 @@ export async function POST(request: Request) {
     const binData = await fetchRes.json();
     const currentImages = binData?.record?.images ?? [];
 
-    console.log("🗃️ Current images from JSONBin:", currentImages.length);
+    console.log("🗃️ Fetched JSONBin. Total images:", currentImages.length);
 
-    // Push new image URL
+    // Step 3: নতুন image push করলাম
     const updatedImages = [...currentImages, imageUrl];
 
     const saveRes = await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
@@ -52,11 +53,11 @@ export async function POST(request: Request) {
       );
     }
 
-    console.log("✅ Image saved to JSONBin successfully");
+    console.log("✅ Image URL saved to JSONBin");
 
-    return NextResponse.json({ success: true, imageUrl });
+    return NextResponse.json({ success: true });
   } catch (err) {
-    console.error("❌ Upload + Save Error:", err);
+    console.error("❌ Server Error:", err);
     return NextResponse.json(
       { error: "Unexpected server error" },
       { status: 500 }
