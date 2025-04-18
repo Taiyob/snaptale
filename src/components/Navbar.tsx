@@ -10,12 +10,10 @@ const Navbar = () => {
           alt="Beautiful background"
           width={100}
           height={80}
-
+          unoptimized={true}
         />
       </div>
-      <div>
-        
-      </div>
+      <div></div>
     </div>
   );
 };
