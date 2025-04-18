@@ -15,7 +15,7 @@ const Footer = () => {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <Image src="/github.svg" alt="GitHub icon" width={18} height={18} />
+          <Image src="/" alt="GitHub icon" width={18} height={18} />
           GitHub
         </a>
         <a
@@ -23,7 +23,7 @@ const Footer = () => {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <Image src="/globe.svg" alt="Website icon" width={18} height={18} />
+          <Image src="/" alt="Website icon" width={18} height={18} />
           Portfolio
         </a>
         <a
@@ -31,7 +31,7 @@ const Footer = () => {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <Image src="/email.svg" alt="Email icon" width={18} height={18} />
+          <Image src="/" alt="Email icon" width={18} height={18} />
           Contact
         </a>
       </div>
