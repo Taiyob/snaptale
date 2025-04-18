@@ -1,7 +1,11 @@
-import Gallery from "@/components/Gallery";
+//import Gallery from "@/components/Gallery";
+import UploadClient from "@/components/UploadClient";
 
 export default function Home() {
   return (
-    <Gallery/>
+    <>
+      <UploadClient />
+      {/* <Gallery /> */}
+    </>
   );
 }
