@@ -20,7 +20,7 @@ export default function UploadClient() {
       <h3>Upload Image</h3>
       <CldUploadButton
         uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
-        onUpload={handleUpload}
+        onSuccess={handleUpload}
       />
     </div>
   );
