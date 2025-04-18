@@ -86,16 +86,6 @@ export default function Gallery() {
 
   //   fetchImages();
   // }, []);
-  useEffect(() => {
-    const fetchImages = async () => {
-      const response = await fetch("/api/getImages");
-      const data = await response.json();
-      setImages(data);
-      setLoading(false);
-    };
-
-    fetchImages();
-  }, []);
 
   // const handleDelete = async (imageUrl) => {
   //   const response = await fetch('/api/deleteImage', {
@@ -114,6 +104,22 @@ export default function Gallery() {
   // if (loading) {
   //   return <p>Loading...</p>;
   // }
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        const response = await fetch("/api/getImages");
+        const data = await response.json();
+        setImages(data.images);
+      } catch (err) {
+        console.error("Failed to fetch images", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchImages();
+  }, []);
 
   return (
     <div className={styles.page}>

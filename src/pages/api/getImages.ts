@@ -11,8 +11,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const binId = process.env.JSON_BIN_ID as string;
-  const masterKey = process.env.JSON_BIN_MASTER_KEY as string;
+  const binId = process.env.JSON_BIN_ID!;
+  const masterKey = process.env.JSON_BIN_MASTER_KEY!;
 
   const url = `https://api.jsonbin.io/v3/b/${binId}`;
   const headers = {
@@ -23,7 +23,7 @@ export default async function handler(
   try {
     const response = await fetch(url, { headers });
     const data = (await response.json()) as JsonBinResponse;
-    res.status(200).json(data.record.images);
+    res.status(200).json({ images: data.record.images });
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch images", error });
   }
