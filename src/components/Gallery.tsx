@@ -70,22 +70,50 @@ export default function Gallery() {
 
   //   fetchImages();
   // }, []);
+  // useEffect(() => {
+  //   const fetchImages = async () => {
+  //     setLoading(true);
+  //     try {
+  //       const res = await fetch("/api/getImages");
+  //       const data = await res.json();
+  //       setImages(data.images);
+  //     } catch (err) {
+  //       console.error("Error fetching images:", err);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchImages();
+  // }, []);
   useEffect(() => {
     const fetchImages = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch("/api/getImages");
-        const data = await res.json();
-        setImages(data.images);
-      } catch (err) {
-        console.error("Error fetching images:", err);
-      } finally {
-        setLoading(false);
-      }
+      const response = await fetch("/api/getImages");
+      const data = await response.json();
+      setImages(data);
+      setLoading(false);
     };
 
     fetchImages();
   }, []);
+
+  // const handleDelete = async (imageUrl) => {
+  //   const response = await fetch('/api/deleteImage', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify({ imageUrl }),
+  //   });
+
+  //   if (response.ok) {
+  //     setImages(images.filter((img) => img !== imageUrl));
+  //   }
+  // };
+
+  // if (loading) {
+  //   return <p>Loading...</p>;
+  // }
 
   return (
     <div className={styles.page}>

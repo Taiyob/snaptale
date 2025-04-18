@@ -1,56 +1,109 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import fetch from "node-fetch";
+
+type JsonBinResponse = {
+  record: {
+    images: string[];
+  };
+};
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   if (req.method !== "POST") {
-    return res.status(405).json({ message: "Method not allowed" });
+    return res.status(405).json({ message: "Method Not Allowed" });
   }
 
-  const { image } = req.body;
+  const { imageUrl } = req.body;
 
-  const CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME;
-  const API_KEY = process.env.CLOUDINARY_API_KEY;
-  const API_SECRET = process.env.CLOUDINARY_API_SECRET;
+  const binId = process.env.JSON_BIN_ID as string;
+  const masterKey = process.env.JSON_BIN_MASTER_KEY as string;
 
-  if (!CLOUD_NAME || !API_KEY || !API_SECRET) {
-    return res.status(500).json({ message: "Missing Cloudinary credentials" });
-  }
+  const url = `https://api.jsonbin.io/v3/b/${binId}`;
+  const headers = {
+    "X-Master-Key": masterKey,
+    "Content-Type": "application/json",
+  };
 
   try {
-    const url = new URL(image);
-    const publicId = url.pathname
-      .split("/")
-      .slice(3)
-      .join("/")
-      .replace(/\.[^/.]+$/, ""); // removes extension
+    const response = await fetch(url, { headers });
+    const data = (await response.json()) as JsonBinResponse;
 
-    const cloudinaryRes = await fetch(
-      `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/resources/image/upload`,
-      {
-        method: "DELETE",
-        headers: {
-          Authorization:
-            "Basic " +
-            Buffer.from(`${API_KEY}:${API_SECRET}`).toString("base64"),
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ public_ids: [publicId] }),
-      }
+    const updatedImages = data.record.images.filter(
+      (img: string) => img !== imageUrl
     );
 
-    const data = await cloudinaryRes.json();
+    const updateResponse = await fetch(url, {
+      method: "PUT",
+      headers,
+      body: JSON.stringify({
+        images: updatedImages,
+      }),
+    });
 
-    return res.status(200).json({ message: "Image deleted", result: data });
-  } catch (err) {
-    console.error("Delete failed", err);
-    return res
+    if (updateResponse.ok) {
+      res.status(200).json({ message: "Image deleted successfully" });
+    } else {
+      res.status(500).json({ message: "Failed to update images" });
+    }
+  } catch (error) {
+    res
       .status(500)
-      .json({ message: "Failed to delete image", error: err });
+      .json({ message: "Failed to fetch or update images", error });
   }
 }
 
+// export default async function handler(
+//   req: NextApiRequest,
+//   res: NextApiResponse
+// ) {
+//   if (req.method !== "POST") {
+//     return res.status(405).json({ message: "Method not allowed" });
+//   }
+
+//   const { image } = req.body;
+
+//   const CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME;
+//   const API_KEY = process.env.CLOUDINARY_API_KEY;
+//   const API_SECRET = process.env.CLOUDINARY_API_SECRET;
+
+//   if (!CLOUD_NAME || !API_KEY || !API_SECRET) {
+//     return res.status(500).json({ message: "Missing Cloudinary credentials" });
+//   }
+
+//   try {
+//     const url = new URL(image);
+//     const publicId = url.pathname
+//       .split("/")
+//       .slice(3)
+//       .join("/")
+//       .replace(/\.[^/.]+$/, ""); // removes extension
+
+//     const cloudinaryRes = await fetch(
+//       `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/resources/image/upload`,
+//       {
+//         method: "DELETE",
+//         headers: {
+//           Authorization:
+//             "Basic " +
+//             Buffer.from(`${API_KEY}:${API_SECRET}`).toString("base64"),
+//           "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify({ public_ids: [publicId] }),
+//       }
+//     );
+
+//     const data = await cloudinaryRes.json();
+
+//     return res.status(200).json({ message: "Image deleted", result: data });
+//   } catch (err) {
+//     console.error("Delete failed", err);
+//     return res
+//       .status(500)
+//       .json({ message: "Failed to delete image", error: err });
+//   }
+// }
 // import fs from "fs";
 // import path from "path";
 // import { NextApiRequest, NextApiResponse } from "next";
